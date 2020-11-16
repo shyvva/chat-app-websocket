@@ -7,8 +7,7 @@ let messageContentInput = document.getElementById('message-content');
 
 const socket = io();
 
-socket.on('message', ({ author, content }) => addMessage(author, content))
-
+socket.on('message', ({ name, message }) => addMessage(name, message));
 
 let userName;
 
@@ -26,35 +25,31 @@ const login = (e) => {
     socket.emit('user', userName);
 };
 
-function addMessage(author, content) {
-    const message = document.createElement('li');
-    message.classList.add('message');
-    message.classList.add('message--received');
-    if (author === userName) message.classList.add('message--self');
-    message.innerHTML = `
-      <h3 class="message__author">${userName === author ? 'You' : author}</h3>
-      <div class="message__content">
-        ${content}
-      </div>
-    `;
-    messagesList.appendChild(message);
-}
+const addMessage = (name, message) => {
+    const listElem = document.createElement('li')//
+    listElem.classList.add('message', 'message--received', `${name === userName && `message--self`}`, `${name === 'Chat Bot' && `message--bot`}`);
+    console.log(listElem);
+    listElem.innerHTML = `
+    <h3 class='message__author'>${name === userName ? 'You' : name}</h3>
+    <div class='message__content'>${message}</div>
+  `;
 
-function sendMessage(e) {
+    messagesList.appendChild(listElem);
+};
+
+const sendMessage = (e) => {
     e.preventDefault();
 
     let messageContent = messageContentInput.value;
 
-    if (!messageContent.length) {
-        alert('You have to type something!');
-    }
-    else {
+    if (messageContent == '') {
+        window.alert('Add your message')
+    } else {
         addMessage(userName, messageContent);
-        socket.emit('message', { author: userName, content: messageContent })
+        socket.emit('message', { name: userName, message: messageContent });
         messageContentInput.value = '';
     }
-
-}
+};
 
 loginForm.addEventListener('submit', login);
 addMessageForm.addEventListener('submit', sendMessage);
