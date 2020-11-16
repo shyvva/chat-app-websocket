@@ -23,6 +23,7 @@ const login = (e) => {
         loginForm.classList.remove('show');
         messagesSection.classList.add('show');
     }
+    socket.emit('user', userName);
 };
 
 function addMessage(author, content) {
